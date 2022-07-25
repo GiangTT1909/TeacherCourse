@@ -17,25 +17,19 @@ public class TeacherClasses {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException {
+        ArrayList<Solution> results = new ArrayList<>();
         // TODO code application logic here
-        Data data = Data.readDataFromFile();
-        GeneticAlgorithmImplementer Ga = new GeneticAlgorithmImplementer(data);
-        ArrayList<Solution> result = Ga.implementGA();
-        for (Solution solution : result) {
-            System.out.println(solution.all_Courses_Contraints);
-            System.out.println(solution.single_Teacher_Courses_Contraints);
-            System.out.println(solution.single_Slot_Contraints);
-            System.out.println(solution.inRange_Slot_Contraints);
-            System.out.println(solution.student_Rating_Constraint);
-            System.out.println(solution.self_Rating_Constraint);
-            System.out.println(solution.slot_Rating_Constraint);
-
-            System.out.println(solution.sum);
-            System.out.println(solution.cal_Fitness(data));
+        for (int i = 0; i < 45; i++){
+            Data data = Data.readDataFromFile();
+            GeneticAlgorithmImplementer Ga = new GeneticAlgorithmImplementer(data);
+            ArrayList<Solution> result = Ga.implementGA();
+            results.add(result.get(result.size()-1));
+            GeneticAlgorithmImplementer.addResult(result.get(result.size()-1), data);
         }
-        GeneticAlgorithmImplementer.writeSolutionAsTimetable(result.get(result.size()-1), data);
-        GeneticAlgorithmImplementer.writeErrCourseToExcel(result.get(result.size()-1), data);
-        GeneticAlgorithmImplementer.writeSolution(result, data);
+        
+        //GeneticAlgorithmImplementer.writeSolutionAsTimetable(result.get(result.size()-1), data);
+        //GeneticAlgorithmImplementer.writeErrCourseToExcel(result.get(result.size()-1), data);
+        
     }
 
 }

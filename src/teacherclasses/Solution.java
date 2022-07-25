@@ -80,7 +80,7 @@ public class Solution {
     public double cal_Favourite_Subs_PJ(Data data, int teacher) {
         double favourite_Subs = 0;
         for (int i = 0; i < data.M; i++) {
-            favourite_Subs += chromosome[i][teacher] * data.FSub[teacher][i];
+            favourite_Subs += chromosome[i][teacher] * data.FSub[teacher][data.courses[i].getSubject()];
         }
         return favourite_Subs;
     }
@@ -88,7 +88,7 @@ public class Solution {
     public double cal_Favourite_Slots_PJ(Data data, int teacher) {
         double favourite_Slots = 0;
         for (int i = 0; i < data.M; i++) {
-            favourite_Slots += chromosome[i][teacher] * data.FSlot[teacher][i];
+            favourite_Slots += chromosome[i][teacher] * data.FSlot[teacher][data.courses[i].getSlot()];
         }
         return favourite_Slots;
     }
@@ -137,7 +137,7 @@ public class Solution {
 
     public double cal_Fitness(Data data) {
         if (check_Solution(data) == false) {
-            return ( data.c1 * cal_Payoff_P0(data) + data.c2 * cal_Payoff_All_PJ(data) )* 10000;
+            return ( data.c1 * cal_Payoff_P0(data) + data.c2 * cal_Payoff_All_PJ(data))* 10000;
         }
         return data.c1 * cal_Payoff_P0(data) + data.c2 * cal_Payoff_All_PJ(data);
     }
@@ -265,4 +265,43 @@ public class Solution {
                 checkSlotRatingConstraint(data);
     }
 
+    
+
+    public double cal_Favourite_Subs_All_PJ(Data data) {
+        double favourite_Subs = 0;
+        for (int i = 0; i < data.N; i++) {
+            favourite_Subs += cal_Favourite_Subs_PJ(data, i);
+        }
+        return favourite_Subs;
+    }
+
+    public double cal_Favourite_Slots_All_PJ(Data data) {
+        double favoriteSlots = 0;
+        for (int i = 0; i < data.N; i++) {
+            favoriteSlots += cal_Favourite_Slots_PJ(data, i);
+        }
+        return favoriteSlots;
+    }
+
+    
+
+    public double cal_Err_Courses_All_PJ(Data data) {
+        double errCourses = 0;
+        for (int i = 0; i < data.N; i++) {
+            errCourses += cal_Err_Courses_PJ(data, i);
+        }
+        return errCourses;
+    }
+
+    
+
+    public double cal_Periods_All_PJ(Data data) {
+        double periods = 0;
+        for (int i = 0; i < data.N; i++) {
+            periods += cal_Periods_PJ(data, i);
+        }
+        return periods;
+    }
+
+    
 }
