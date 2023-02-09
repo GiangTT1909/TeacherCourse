@@ -14,20 +14,31 @@ import java.util.Vector;
  */
 public class Solution {
 
-    public int rank;
-    public int domination_count;
-    public ArrayList<Solution> dominated_solution;
-    public int[] features;
-    public double crowding_distance = 0;
-    public double[] objectives;
+    //Chromosome - a binary matrix with chromosomw[i][j] is teacher j at course i - Decision variable
     public int chromosome[][];
+
+    //Data
     public Data data;
+
+    //Contraitns all course have been assigned
     public boolean all_Courses_Contraints;
+
+    //Contraints a course has only one teacher
     public boolean single_Teacher_Courses_Contraints;
+
+    //Contrants a teacher has only one course at same slot
     public boolean single_Slot_Contraints;
+
+    //Contraints a teacher has number of slots in range
     public boolean inRange_Slot_Contraints;
+
+    //Contraints a teacher has enough rating from students with subject at course assigned
     public boolean student_Rating_Constraint;
+
+    //Contraints a teacher is qualified for subject of assigned course
     public boolean self_Rating_Constraint;
+
+    //Contraints a teacher is able to teach assigned slots
     public boolean slot_Rating_Constraint;
 
     public ArrayList<Integer> sum = new ArrayList<>();
@@ -50,6 +61,8 @@ public class Solution {
         slot_Rating_Constraint = true;
         chromosome = new int[data.M][data.N];
         this.data = data;
+
+        //Create empty schedule
         for (int i = 0; i < data.M; i++) {
             for (int j = 0; j < data.N; j++) {
                 chromosome[i][j] = 0;
@@ -57,34 +70,7 @@ public class Solution {
         }
     }
 
-     public double cal_Periods_All_PJ(Data data) {
-        double periods = 0;
-        for (int i = 0; i < data.N; i++) {
-            periods += cal_Periods_PJ(data, i);
-        }
-        return periods;
-    }
-      public double cal_Err_Courses_All_PJ(Data data) {
-        double errCourses = 0;
-        for (int i = 0; i < data.N; i++) {
-            errCourses += cal_Err_Courses_PJ(data, i);
-        }
-        return errCourses;
-    }
-      public double cal_Favourite_Slots_All_PJ(Data data) {
-        double favoriteSlots = 0;
-        for (int i = 0; i < data.N; i++) {
-            favoriteSlots += cal_Favourite_Slots_PJ(data, i);
-        }
-        return favoriteSlots;
-    }
-       public double cal_Favourite_Subs_All_PJ(Data data) {
-        double favourite_Subs = 0;
-        for (int i = 0; i < data.N; i++) {
-            favourite_Subs += cal_Favourite_Subs_PJ(data, i);
-        }
-        return favourite_Subs;
-    }
+    //Calculate quality of P0
     public double cal_Quality_P0(Data data) {
         double quality = 0;
         for (int i = 0; i < data.M; i++) {
@@ -95,6 +81,7 @@ public class Solution {
         return quality;
     }
 
+    //Calculate total salary 
     public double cal_Salary_P0(Data data) {
         double salary = 0;
         for (int i = 0; i < data.M; i++) {
@@ -105,12 +92,14 @@ public class Solution {
         return salary;
     }
 
+    //Calculate payoff of P0 
     public double cal_Payoff_P0(Data data) {
         double payoff;
         payoff = data.w1 * cal_Quality_P0(data) / (data.w2 * cal_Salary_P0(data));
         return payoff;
     }
 
+    //Calculate Interest (for the subject) for the assigned courses of Pj
     public double cal_Favourite_Subs_PJ(Data data, int teacher) {
         double favourite_Subs = 0;
         for (int i = 0; i < data.M; i++) {
@@ -119,6 +108,8 @@ public class Solution {
         return favourite_Subs;
     }
 
+    
+    //Calculate Interest (in terms of time frame) for the Courses classified of Pj
     public double cal_Favourite_Slots_PJ(Data data, int teacher) {
         double favourite_Slots = 0;
         for (int i = 0; i < data.M; i++) {
@@ -127,6 +118,7 @@ public class Solution {
         return favourite_Slots;
     }
 
+    //Calculate The difference between the desired number of layers and the number of classes to be classified of Pj
     public double cal_Err_Courses_PJ(Data data, int teacher) {
         double Err_Courses = 0;
         for (int i = 0; i < data.M; i++) {
@@ -136,6 +128,7 @@ public class Solution {
         return Math.abs(Err_Courses);
     }
 
+    //Calculate Number of time segments of the day of Pj
     public double cal_Periods_PJ(Data data, int teacher) {
 
         ArrayList<Integer> list = new ArrayList<>();
@@ -156,26 +149,32 @@ public class Solution {
 
     }
 
+    //Calculate Payoff of Pj
     public double cal_Payoff_PJ(Data data, int teacher) {
         double payoff = (data.w3 * cal_Favourite_Subs_PJ(data, teacher) + data.w4 * cal_Favourite_Slots_PJ(data, teacher)) / (data.w5 * cal_Err_Courses_PJ(data, teacher) + data.w6 * cal_Periods_PJ(data, teacher));
         return payoff;
     }
-
+    
+    //Calculate Payoff of all Pj from 1 to N
     public double cal_Payoff_All_PJ(Data data) {
         double payoff = 0;
         for (int i = 0; i < data.N; i++) {
-            payoff += cal_Payoff_PJ(data, i);
+            payoff += data.w[i + 1] * cal_Payoff_PJ(data, i);
         }
         return payoff;
     }
 
+    //Calculate Fitness
     public double cal_Fitness(Data data) {
+        
+        //Phat solution neu no vi pham contraints
         if (check_Solution(data) == false) {
-            return (data.c1 * cal_Payoff_P0(data) + data.c2 * cal_Payoff_All_PJ(data)) * 10000;
+            return ((data.c1 * cal_Payoff_P0(data) + data.c2 * cal_Payoff_All_PJ(data))) / 10000;
         }
-        return data.c1 * cal_Payoff_P0(data) + data.c2 * cal_Payoff_All_PJ(data);
+        return (data.c1 * cal_Payoff_P0(data) + data.c2 * cal_Payoff_All_PJ(data));
     }
 
+    //Check Contraitns all course have been assigned
     public boolean checkAllCourseConstraint(Data data) {
         int sumSlot = 0;
         for (int i = 0; i < data.M; i++) {
@@ -192,6 +191,7 @@ public class Solution {
         return false;
     }
 
+     //Check Contraints a course has only one teacher
     public boolean checkSingleTeacherCourseConstraint(Data data) {
         for (int i = 0; i < data.M; i++) {
             int sum2 = 0;
@@ -208,6 +208,7 @@ public class Solution {
         return true;
     }
 
+     //Check Contrants a teacher has only one course at same slot
     public boolean checkSingleSlotConstraint(Data data) {
         for (int i = 0; i < data.N; i++) {
             ArrayList<Integer> list = new ArrayList<>();
@@ -230,6 +231,7 @@ public class Solution {
         return true;
     }
 
+     //Check Contraints a teacher has number of slots in range
     public boolean checkInRangeSlotConstraint(Data data) {
         for (int i = 0; i < data.N; i++) {
             int sum3 = 0;
@@ -238,7 +240,7 @@ public class Solution {
                     sum3 += chromosome[j][i];
                 }
             }
-            //sum.add(sum3);
+            sum.add(sum3);
             if (sum3 > data.teachers[i].getMaxClass() || sum3 < data.teachers[i].getMinClass()) {
                 //System.out.println("Number of slot not in range");
                 inRange_Slot_Contraints = false;
@@ -249,6 +251,7 @@ public class Solution {
         return true;
     }
 
+     //Check Contraints a teacher has enough rating from students with subject at course assigned
     public boolean checkStudentRatingConstraint(Data data) {
         for (int i = 0; i < data.M; i++) {
             for (int j = 0; j < data.N; j++) {
@@ -261,6 +264,7 @@ public class Solution {
         return true;
     }
 
+     //Check Contraints a teacher is qualified for subject of assigned course
     public boolean checkSelfRatingConstaint(Data data) {
         for (int i = 0; i < data.M; i++) {
             for (int j = 0; j < data.N; j++) {
@@ -273,6 +277,7 @@ public class Solution {
         return true;
     }
 
+     //Check Contraints a teacher is able to teach assigned slots
     public boolean checkSlotRatingConstraint(Data data) {
         for (int i = 0; i < data.M; i++) {
             for (int j = 0; j < data.N; j++) {
@@ -285,6 +290,7 @@ public class Solution {
         return true;
     }
 
+    //Check if valid solution
     public boolean check_Solution(Data data) {
         checkAllCourseConstraint(data);
         checkInRangeSlotConstraint(data);
@@ -299,30 +305,40 @@ public class Solution {
                 && checkSlotRatingConstraint(data);
     }
 
-    public boolean dominates(Object o) {
-
-        if (!(o instanceof Solution)) {
-            return false;
-        }
-
-        Solution other = (Solution) o;
-        boolean and_condition = true;
-        boolean or_condition = false;
+    //Calculate sum of PJ Favour_Sub
+    public double cal_Favourite_Subs_All_PJ(Data data) {
+        double favourite_Subs = 0;
         for (int i = 0; i < data.N; i++) {
-            and_condition = and_condition && (this.cal_Err_Courses_PJ(data, i) <= other.cal_Err_Courses_PJ(data, i));
-            or_condition = or_condition || (this.cal_Err_Courses_PJ(data, i) < other.cal_Err_Courses_PJ(data, i));
-            and_condition = and_condition && (this.cal_Favourite_Slots_PJ(data, i) >= other.cal_Favourite_Slots_PJ(data, i));
-            or_condition = or_condition || (this.cal_Favourite_Slots_PJ(data, i) > other.cal_Favourite_Slots_PJ(data, i));
-            and_condition = and_condition && (this.cal_Favourite_Subs_PJ(data, i) >= other.cal_Favourite_Subs_PJ(data, i));
-            or_condition = or_condition || (this.cal_Favourite_Subs_PJ(data, i) > other.cal_Favourite_Subs_PJ(data, i));
-            and_condition = and_condition && (this.cal_Periods_PJ(data, i) <= other.cal_Periods_PJ(data, i));
-            or_condition = or_condition || (this.cal_Periods_PJ(data, i) < other.cal_Periods_PJ(data, i));
+            favourite_Subs += cal_Favourite_Subs_PJ(data, i);
         }
-        and_condition = and_condition && (this.cal_Quality_P0(data) >= other.cal_Quality_P0(data));
-        or_condition = or_condition || (this.cal_Quality_P0(data) > other.cal_Quality_P0(data));
-        and_condition = and_condition && (this.cal_Salary_P0(data) <= other.cal_Salary_P0(data));
-        or_condition = or_condition || (this.cal_Salary_P0(data) <other.cal_Salary_P0(data));
-        return (and_condition && or_condition);
+        return favourite_Subs;
+    }
+
+    //Calculate sum of PJ Favour_Slot
+    public double cal_Favourite_Slots_All_PJ(Data data) {
+        double favoriteSlots = 0;
+        for (int i = 0; i < data.N; i++) {
+            favoriteSlots += cal_Favourite_Slots_PJ(data, i);
+        }
+        return favoriteSlots;
+    }
+
+    //Calculate sum of PJ Error_Course
+    public double cal_Err_Courses_All_PJ(Data data) {
+        double errCourses = 0;
+        for (int i = 0; i < data.N; i++) {
+            errCourses += cal_Err_Courses_PJ(data, i);
+        }
+        return errCourses;
+    }
+
+    //Calculate sum of PJ PeriodOfDay
+    public double cal_Periods_All_PJ(Data data) {
+        double periods = 0;
+        for (int i = 0; i < data.N; i++) {
+            periods += cal_Periods_PJ(data, i);
+        }
+        return periods;
     }
 
 }

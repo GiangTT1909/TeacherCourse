@@ -11,8 +11,14 @@ package teacherclasses;
 public class Course {
     private int id;
     private String classes;
+    
+    //Id of subject
     private int subject;
+    
+    //Name of subject
     private String subjectName;
+    
+    //Time slot M1,M2,... -> 1,2,3,..
     private int slot;
     private String room;
 
