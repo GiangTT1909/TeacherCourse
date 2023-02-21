@@ -95,7 +95,7 @@ public class Solution {
     //Calculate payoff of P0 
     public double cal_Payoff_P0(Data data) {
         double payoff;
-        payoff = data.w1 * cal_Quality_P0(data) / (data.w2 * cal_Salary_P0(data));
+        payoff = data.w1 * cal_Quality_P0(data);
         return payoff;
     }
 
@@ -125,7 +125,7 @@ public class Solution {
             Err_Courses += chromosome[i][teacher];
         }
         Err_Courses = data.teachers[teacher].getIdealClass() - Err_Courses;
-        return Math.abs(Err_Courses);
+        return 10- Math.abs(Err_Courses);
     }
 
     //Calculate Number of time segments of the day of Pj
@@ -151,7 +151,7 @@ public class Solution {
 
     //Calculate Payoff of Pj
     public double cal_Payoff_PJ(Data data, int teacher) {
-        double payoff = (data.w3 * cal_Favourite_Subs_PJ(data, teacher) + data.w4 * cal_Favourite_Slots_PJ(data, teacher)) / (data.w5 * cal_Err_Courses_PJ(data, teacher) + data.w6 * cal_Periods_PJ(data, teacher));
+        double payoff = (data.w3 * cal_Favourite_Subs_PJ(data, teacher) + data.w4 * cal_Favourite_Slots_PJ(data, teacher)+ data.w5 * cal_Err_Courses_PJ(data, teacher));
         return payoff;
     }
     

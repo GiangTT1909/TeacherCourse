@@ -368,7 +368,8 @@ public class GeneticAlgorithmImplementer {
         }
         cell = row.createCell(data.N + 2);
         cell.setCellValue("Time");
-
+        cell = row.createCell(data.N + 3);
+        cell.setCellValue("Fitness");
         int rowCount = 0;
 
         for (Solution s : solutions) {
@@ -381,6 +382,8 @@ public class GeneticAlgorithmImplementer {
             }
             cell = row.createCell(data.N + 2);
             cell.setCellValue(time);
+            cell = row.createCell(data.N + 3);
+            cell.setCellValue(s.cal_Fitness(data));
         }
         try (FileOutputStream outputStream = new FileOutputStream("Fitness.xlsx")) {
             workbook.write(outputStream);
