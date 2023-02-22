@@ -217,9 +217,14 @@ public class GeneticAlgorithmImplementer {
             
             //Them solution tot nhat vao tap ket qua
             if (result.get(result.size() - 1).cal_Fitness(data) <= next_generation.get(0).cal_Fitness(data)) {
+                System.out.println(j + " - "+next_generation.get(0).cal_Fitness(data));
                 result.add(next_generation.get(0));
             }
-
+            
+            else{
+                System.out.println(j + " - "+result.get(result.size() - 1).cal_Fitness(data));
+                result.add(result.get(result.size() - 1));
+            }
             current_generation.clear();
             current_generation = new ArrayList<>(next_generation);
         }
@@ -228,6 +233,9 @@ public class GeneticAlgorithmImplementer {
         //Set time execution
         time = endTime - startTime;
         //result chua 300 ket qua. Moi ket qua la ket qua tot nhat cua 1 trong 300 vong lap
+//        for(int i=0;i<result.size();i++){
+//            System.out.println(i+" - " + result.get(i).cal_Fitness(data));
+//        }
         return result;
     }
 
@@ -355,9 +363,9 @@ public class GeneticAlgorithmImplementer {
     
     //Write all payoff of set of solutions to excel file
     //Ghi lai payoff cua tung nguoi choi va fitness ung voi moi solution
-    public static void writeSolutions(ArrayList<Solution> solutions, Data data, long time) throws IOException {
+    public static void writeSolutions(ArrayList<Solution> solutions, Data data, long time,String sheetName) throws IOException {
         XSSFWorkbook workbook = new XSSFWorkbook();
-        XSSFSheet sheet = workbook.createSheet("Sheet1");
+        XSSFSheet sheet = workbook.createSheet(sheetName);
 
         Row row = sheet.createRow(0);
         Cell cell = row.createCell(0);
@@ -385,7 +393,7 @@ public class GeneticAlgorithmImplementer {
             cell = row.createCell(data.N + 3);
             cell.setCellValue(s.cal_Fitness(data));
         }
-        try (FileOutputStream outputStream = new FileOutputStream("Fitness.xlsx")) {
+        try (FileOutputStream outputStream = new FileOutputStream(sheetName+".xlsx")) {
             workbook.write(outputStream);
             outputStream.close();
         }
@@ -410,7 +418,7 @@ public class GeneticAlgorithmImplementer {
     }
 
     //Write a solution timetable to excel
-    public static void writeSolutionAsTimetable(Solution solution, Data data) throws IOException {
+    public static void writeSolutionAsTimetable(Solution solution, Data data,String sheetName) throws IOException {
         XSSFWorkbook workbook = new XSSFWorkbook();
         for (int i = 0; i < data.N; i++) {
 
@@ -524,7 +532,7 @@ public class GeneticAlgorithmImplementer {
                 }
             }
         }
-        try (FileOutputStream outputStream = new FileOutputStream("Schedule.xlsx")) {
+        try (FileOutputStream outputStream = new FileOutputStream(sheetName+"Schedule.xlsx")) {
             workbook.write(outputStream);
             outputStream.close();
         }

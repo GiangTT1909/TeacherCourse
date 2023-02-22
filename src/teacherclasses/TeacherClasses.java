@@ -24,10 +24,14 @@ public class TeacherClasses {
         
         GeneticAlgorithmImplementer ga = new GeneticAlgorithmImplementer(data);
         
-        //Start algorithms
+        for(int i=1;i<=15;i++){
+            //Start algorithms
         ArrayList<Solution> result = ga.implementGA();
         
         //Write results to excel        
-        GeneticAlgorithmImplementer.writeSolutions(result, data, ga.time);
+        GeneticAlgorithmImplementer.writeSolutions(result, data, ga.time,"Sheet"+i);
+        GeneticAlgorithmImplementer.writeSolutionAsTimetable(result.get(result.size()-1), data, "Schedule-"+i);
+        }
+        
     }
 }

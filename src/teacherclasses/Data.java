@@ -56,9 +56,9 @@ public class Data {
         data.T = 10;
         data.w1 = 1;
         data.w2 = 0.333;
-        data.w3= 0.333;
-        data.w4 =0.333;
-        data.w5 = 0.333;
+        data.w3=  1.0/3.0;
+        data.w4 = 1.0/3.0;
+        data.w5 = 1.0/3.0;
         data.w6 = (double) rand.nextInt(10) + 1;
         data.c1 = 0.5;
         data.c2 = 0.5;
