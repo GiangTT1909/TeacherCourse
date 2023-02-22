@@ -24,7 +24,7 @@ public class GeneticAlgorithmImplementer {
 
     //Chua moi dau vao va cac trong so cua mo hinh
     Data data;
-    
+
     //Dung de do thoi gian chay cua thuat toan
     long time;
 
@@ -35,7 +35,7 @@ public class GeneticAlgorithmImplementer {
 
     //Generate a new Solution
     public Solution generateSolution() {
-        
+
         /*Qua trinh generate theo luong nhu sau:
         1. Assign giao vien cho tung course
             Voi moi course, lap qua danh sach giao vien:
@@ -47,8 +47,7 @@ public class GeneticAlgorithmImplementer {
             1.6. Chon random 1 giao vien tu list va assign cho course nay
            Lap tu 1.1 => 1.6 cho den khi tat ca course dc assign => Day la solution
         
-        */
-        
+         */
         //Number of slot assigned for each Teacher, start from 0
         int[] currentSlots = new int[data.N];
 
@@ -60,15 +59,15 @@ public class GeneticAlgorithmImplementer {
         //With each course randomly choose a teacher to assign
         for (int i = 0; i < data.M; i++) {
             DistributedRandomNumberGenerator rnd = new DistributedRandomNumberGenerator();
-            
+
             for (int j = 0; j < data.N; j++) {
-                
+
                 int sumSlot = 0;
 
                 //Check if the teacher is able to teach at this slots or this subject
                 if (data.Rating[j][data.courses[i].getSubject()] > 0 && data.FSlot[j][data.courses[i].getSlot()] > 0 && data.FSub[j][data.courses[i].getSubject()] > 0) {
                     ArrayList<Integer> slot = new ArrayList<>();
-                    
+
                     //Calculate number of slot the teacher has been assigned
                     for (int k = 0; k <= i; k++) {
                         if (s.chromosome[k][j] == 1) {
@@ -84,7 +83,7 @@ public class GeneticAlgorithmImplementer {
                 }
 
             }
-            
+
             //Randomly choose teacher from pool; every teacher has same chance.
             randomNum = rnd.getDistributedRandomNumber();
             s.chromosome[i][randomNum] = 1;
@@ -95,7 +94,7 @@ public class GeneticAlgorithmImplementer {
     //Crossover parents to a new Solution
     public Solution Crossover(Solution Mom, Solution Dad) {
         Solution child = new Solution(data);
-        
+
         //Cut off Mom and Dad Solutions at middle veritcally, combine Mom 1st half and Dad 2nd half to new Chromosome
         for (int i = 0; i < data.M / 2; i++) {
             for (int j = 0; j < data.N; j++) {
@@ -116,29 +115,26 @@ public class GeneticAlgorithmImplementer {
         int range = maximum - minimum;
         int randomNum;
 
-       
-        Random rn = new Random();        
-         //Random an index in range
+        Random rn = new Random();
+        //Random an index in range
         randomNum = rn.nextInt(range) + minimum;
         int randomNum2;
         do {
             //Random another index in range not duplicate the first one
             randomNum2 = rn.nextInt(range) + minimum;
         } while (randomNum2 == randomNum);
-        
+
         //Swap 2 rows of chromosome based on 2 random index
         int tmpRow[] = s.chromosome[randomNum];
         s.chromosome[randomNum] = s.chromosome[randomNum2];
         s.chromosome[randomNum2] = tmpRow;
-        
+
         return s;
     }
 
-    
     //Thuc thi GA
     public ArrayList<Solution> implementGA() {
-        
-        
+
         long startTime = System.currentTimeMillis();
         //Tap chu ket qua khoi tao rong, tap nay chua solution tot nhat cua moi vong lap
         ArrayList<Solution> result = new ArrayList<>();
@@ -166,10 +162,9 @@ public class GeneticAlgorithmImplementer {
             }
         });
 
-        
         //Them solution tot nhat vao tap ket qua
         result.add(current_generation.get(0));
-        
+
         //Produce new generation
         for (int j = 0; j < 300; j++) {
             //Selection keep top 30 best solutions to new generation
@@ -185,7 +180,7 @@ public class GeneticAlgorithmImplementer {
                 } while (randomNum2 == randomNum);
                 next_generation.add(Crossover(current_generation.get(randomNum), current_generation.get(randomNum2)));
             }
-            
+
             //Sort new generation giam dan theo fitness
             Collections.sort(next_generation, new Comparator<Solution>() {
                 @Override
@@ -195,8 +190,7 @@ public class GeneticAlgorithmImplementer {
                 }
 
             });
-            
-            
+
             //mutation new generation
             for (int i = 0; i < 40; i++) {
                 //dot bien 40 ca the ko nam trong 25 ca the tot nhat.
@@ -204,8 +198,8 @@ public class GeneticAlgorithmImplementer {
                 randomNum = rn.nextInt(range - 25) + mutation_minimum;
                 next_generation.set(randomNum, Mutate(next_generation.get(randomNum)));
             }
-            
-             //Sort new generation
+
+            //Sort new generation
             Collections.sort(next_generation, new Comparator<Solution>() {
                 @Override
                 public int compare(Solution o1, Solution o2) {
@@ -214,7 +208,7 @@ public class GeneticAlgorithmImplementer {
                 }
 
             });
-            
+
             //Them solution tot nhat vao tap ket qua
             if (result.get(result.size() - 1).cal_Fitness(data) <= next_generation.get(0).cal_Fitness(data)) {
                 result.add(next_generation.get(0));
@@ -224,7 +218,7 @@ public class GeneticAlgorithmImplementer {
             current_generation = new ArrayList<>(next_generation);
         }
         long endTime = System.currentTimeMillis();
-        
+
         //Set time execution
         time = endTime - startTime;
         //result chua 300 ket qua. Moi ket qua la ket qua tot nhat cua 1 trong 300 vong lap
@@ -232,30 +226,28 @@ public class GeneticAlgorithmImplementer {
     }
 
     //Tìm tập Pareto bằng cách lấy kết quả tốt nhất của mỗi lần chạy thuật toán GA và random các tham số 
-        public ArrayList<Solution> findPareto(int numberOfLoop) {
-         long startTime = System.currentTimeMillis();
+    public ArrayList<Solution> findPareto(int numberOfLoop) {
+        long startTime = System.currentTimeMillis();
         //Tập kết quả bao gồm kết quả tốt nhất của mỗi vòng lặp
         ArrayList<Solution> results = new ArrayList<>();
-        
-        for(int i=0;i<numberOfLoop;i ++){
+
+        for (int i = 0; i < numberOfLoop; i++) {
             System.out.println(i);
             Random rand = new Random();
-            for(int j=0;j<data.N+1;j++){
-                data.w[j] =(double) rand.nextInt(10) + 1;
+            for (int j = 0; j < data.N + 1; j++) {
+                data.w[j] = (double) rand.nextInt(10) + 1;
             }
-            
-           
+
             ArrayList<Solution> result = implementGA();
-            results.add(result.get(result.size()-1));
+            results.add(result.get(result.size() - 1));
         }
-         long endTime = System.currentTimeMillis();
-        
+        long endTime = System.currentTimeMillis();
+
         //Set time execution
         time = endTime - startTime;
-            return  results;
+        return results;
     }
-    
-    
+
     //Write fitness and all objective of set of solutions
     public static void writeSolution(ArrayList<Solution> solutions, Data data) throws IOException {
         XSSFWorkbook workbook = new XSSFWorkbook();
@@ -352,7 +344,6 @@ public class GeneticAlgorithmImplementer {
         }
     }
 
-    
     //Write all payoff of set of solutions to excel file
     //Ghi lai payoff cua tung nguoi choi va fitness ung voi moi solution
     public static void writeSolutions(ArrayList<Solution> solutions, Data data, long time) throws IOException {
@@ -391,7 +382,6 @@ public class GeneticAlgorithmImplementer {
         }
     }
 
-    
     //Write  The difference between the desired number of layers and the number of classes to be classified of all teachers to excel
     public static void writeErrCourseToExcel(Solution solution, Data data) throws IOException {
         XSSFWorkbook workbook = new XSSFWorkbook();
@@ -529,5 +519,64 @@ public class GeneticAlgorithmImplementer {
             outputStream.close();
         }
 
+    }
+
+    public static void writeAvgRatingToExcel(Solution solution, Data data) throws IOException {
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        
+        XSSFSheet sheet = workbook.createSheet("Sheet1");
+        
+        double[] avgTeacherSlot = solution.cal_Avg_Teacher_Slot_All();
+        double[] avgTeacherSub = solution.cal_Avg_Teacher_Sub_All();
+        double[] avgSubjectRating = solution.cal_Avg_Sub_Quality();
+        
+        Row row = sheet.createRow(0);
+        Cell cell;
+        cell = row.createCell(0);
+        cell.setCellValue("Teacher");
+        for (int i = 0; i<data.N; i++){
+            cell = row.createCell(i+1);
+            cell.setCellValue(i);
+        }
+        
+        row = sheet.createRow(1);
+        cell = row.createCell(0);
+        cell.setCellValue("Avg teacher rating to slot");
+        
+        for (int i = 0; i<data.N; i++){
+            cell = row.createCell(i+1);
+            cell.setCellValue(avgTeacherSlot[i]);
+        } 
+        
+        row = sheet.createRow(2);
+        cell = row.createCell(0);
+        cell.setCellValue("Avg teacher rating to subject");
+        
+        for (int i = 0; i<data.N; i++){
+            cell = row.createCell(i+1);
+            cell.setCellValue(avgTeacherSub[i]);
+        } 
+        
+        row = sheet.createRow(5);
+        cell = row.createCell(0);
+        cell.setCellValue("Subject");
+        for (int i = 0; i<data.L; i++){
+            cell = row.createCell(i+1);
+            cell.setCellValue(i);
+        }
+        
+        row = sheet.createRow(6);
+        cell = row.createCell(0);
+        cell.setCellValue("Avg student rating to subject");
+        
+        for (int i = 0; i<data.L; i++){
+            cell = row.createCell(i+1);
+            cell.setCellValue(avgSubjectRating[i]);
+        } 
+        
+        try (FileOutputStream outputStream = new FileOutputStream("Average.xlsx")) {
+            workbook.write(outputStream);
+            outputStream.close();
+        }
     }
 }

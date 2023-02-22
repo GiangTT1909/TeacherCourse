@@ -28,6 +28,8 @@ public class TeacherClasses {
         ArrayList<Solution> result = ga.implementGA();
         
         //Write results to excel        
-        GeneticAlgorithmImplementer.writeSolutions(result, data, ga.time);
+        //GeneticAlgorithmImplementer.writeSolutions(result, data, ga.time);
+        
+        GeneticAlgorithmImplementer.writeAvgRatingToExcel(result.get(result.size()-1), data);
     }
 }

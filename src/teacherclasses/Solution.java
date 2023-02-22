@@ -341,4 +341,72 @@ public class Solution {
         return periods;
     }
 
+    private double cal_Avg_Teacher_Slot(int teacher){
+        int sumCourse = 0;
+        double favScore = 0;
+        for (int i = 0; i < data.M; i++) {
+            sumCourse += chromosome[i][teacher];
+        }
+        for (int i = 0; i < data.M; i++) {
+            if (chromosome[i][teacher] == 1){
+                favScore += data.FSlot[teacher][data.courses[i].getSlot()];
+            }
+        }
+        return favScore/sumCourse;
+    }
+    
+    public double[] cal_Avg_Teacher_Slot_All(){
+        double result[] = new double[data.N];
+        for (int i = 0; i < data.N; i++){
+            result[i] = cal_Avg_Teacher_Slot(i);
+        }
+        return result;
+    }
+    
+    private double cal_Avg_Teacher_Sub(int teacher){
+        int sumCourse = 0;
+        double favScore = 0;
+        for (int i = 0; i < data.M; i++) {
+            sumCourse += chromosome[i][teacher];
+        }
+        for (int i = 0; i < data.M; i++) {
+            if (chromosome[i][teacher] == 1){
+                favScore += data.FSub[teacher][data.courses[i].getSubject()];
+            }
+        }
+        return favScore/sumCourse;
+    }
+    
+    public double[] cal_Avg_Teacher_Sub_All(){
+        double result[] = new double[data.N];
+        for (int i = 0; i < data.N; i++){
+            result[i] = cal_Avg_Teacher_Sub(i);
+        }
+        return result;
+    }
+    
+    public double[] cal_Avg_Sub_Quality(){
+        double result[] = new double[data.L]; //the avg student-rated quality with respect to each subject
+        double sumRating[] = new double[data.L]; 
+        double sumSlot[] = new double[data.L];
+        
+        for (int i = 0; i< data.L; i++){
+            sumRating[i] = 0;
+            sumSlot[i] = 0;
+        }
+        
+        for (int i = 0; i < data.M; i++){
+            for (int j = 0; j < data.N; j++){
+                if (chromosome[i][j] == 1){
+                    sumRating[data.courses[i].getSubject()] += data.Rating[j][data.courses[i].getSubject()];
+                    sumSlot[data.courses[i].getSubject()] += 1;
+                }
+            }
+        }
+        
+        for (int i = 0; i < data.L; i++){
+            result[i] = sumRating[i]/sumSlot[i];
+        }
+        return result;
+    }
 }
